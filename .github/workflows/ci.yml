@@ -9,23 +9,28 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.toxenv }}
+    name: ${{ matrix.toxenv }} (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        python-version:
+          - "3.12"
         toxenv:
           - lint
           - sphinx81
           - sphinx82
           - sphinx91
           - sphinx-revert
+        include:
+          - python-version: "3.10"
+            toxenv: sphinx81
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install "tox>=4.20"
       - run: tox -e "${{ matrix.toxenv }}"
