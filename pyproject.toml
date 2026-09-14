@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sphinx-singlehtml-anchors"
+dynamic = ["version"]
+description = "Document-qualified anchors for Sphinx singlehtml builds"
+readme = "README.rst"
+requires-python = ">=3.10"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Jared Dillard"},
+]
+classifiers = [
+    "Framework :: Sphinx :: Extension",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+    "Sphinx>=8.1",
+]
+
+[project.urls]
+Issues = "https://github.com/jdillard/sphinx-singlehtml-anchors/issues"
+Source = "https://github.com/jdillard/sphinx-singlehtml-anchors"
+
+[dependency-groups]
+test = [
+    "pytest>=8",
+    "Sphinx==8.1.3",
+]
+lint = [
+    "mypy>=1.11",
+    "ruff>=0.8",
+    "types-docutils",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["sphinx_singlehtml_anchors"]
+
+[tool.setuptools.dynamic]
+version = {attr = "sphinx_singlehtml_anchors.__version__"}
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+packages = ["sphinx_singlehtml_anchors"]
+mypy_path = "src"
