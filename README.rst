@@ -6,15 +6,13 @@ targets in ``singlehtml`` output document-qualified IDs. It is intended to
 provide community testing for a future fix to
 `sphinx-doc/sphinx#4814 <https://github.com/sphinx-doc/sphinx/issues/4814>`_.
 
-The extension currently targets Sphinx releases where
-``SingleFileHTMLBuilder.fix_refuris()`` is active:
+The extension supports released Sphinx versions from 8.1 through 9.x across
+both ``SingleFileHTMLBuilder.fix_refuris()`` lifecycle behaviors:
 
-* Sphinx 8.1.x
+* Sphinx 8.1.x, where Sphinx calls ``fix_refuris()``
+* Sphinx 8.2.x through 9.x, where the extension supplies the omitted calls
 * Sphinx versions containing the restoration proposed by
   `sphinx-doc/sphinx#14241 <https://github.com/sphinx-doc/sphinx/pull/14241>`_
-
-Support for the temporary Sphinx 8.2+ behavior where ``fix_refuris()`` exists
-but is not called will be added separately.
 
 Installation
 ------------
@@ -55,17 +53,14 @@ are tested.
 Development
 -----------
 
-Run the Sphinx 8.1 compatibility suite:
+Run the complete compatibility and static-check suite:
 
 .. code-block:: console
 
-   tox -e sphinx81
+   tox
 
-Run against the proposed ``fix_refuris()`` restoration:
-
-.. code-block:: console
-
-   tox -e sphinx-revert
+The compatibility matrix covers Sphinx 8.1, 8.2, 9.1, and the proposed
+``fix_refuris()`` restoration.
 
 Prior art
 ---------

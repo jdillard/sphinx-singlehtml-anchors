@@ -17,6 +17,8 @@ jobs:
         toxenv:
           - lint
           - sphinx81
+          - sphinx82
+          - sphinx91
           - sphinx-revert
 
     steps:

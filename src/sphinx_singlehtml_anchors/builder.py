@@ -28,16 +28,12 @@ class DocumentQualifiedSingleHTMLBuilder(SingleFileHTMLBuilder):
     _qualified_body = False
 
     def assemble_doctree(self) -> nodes.document:
-        """Assemble the doctree and require the active ``fix_refuris`` hook."""
+        """Assemble the doctree and qualify targets once."""
         self._qualified_body = False
         self._qualified_target_map = None
         tree = super().assemble_doctree()
         if not self._qualified_body:
-            raise ExtensionError(
-                "sphinx-singlehtml-anchors currently requires a Sphinx version "
-                "that actively calls SingleFileHTMLBuilder.fix_refuris(); "
-                "Sphinx 8.2+ support will be added separately"
-            )
+            self.fix_refuris(tree)
         return tree
 
     def fix_refuris(self, tree: nodes.Node) -> None:
@@ -60,6 +56,16 @@ class DocumentQualifiedSingleHTMLBuilder(SingleFileHTMLBuilder):
             mapping=self._qualified_target_map,
             all_docnames=all_docnames,
         )
+
+    def render_partial(self, node: nodes.Node | None) -> dict[str, str]:
+        """Rewrite toctree references before Sphinx renders a partial tree."""
+        if node is not None and self._qualified_target_map is not None:
+            rewrite_toctree_references(
+                node,
+                mapping=self._qualified_target_map,
+                all_docnames=set(self.env.all_docs),
+            )
+        return super().render_partial(node)
 
     def assemble_toc_secnumbers(self) -> dict[str, dict[str, tuple[int, ...]]]:
         """Assemble section numbers using qualified target IDs."""
