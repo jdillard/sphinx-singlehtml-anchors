@@ -22,7 +22,13 @@ dependencies = [
     "Sphinx>=8.1,<10",
 ]
 
+[project.optional-dependencies]
+docs = [
+    "furo>=2024.8.6",
+]
+
 [project.urls]
+Documentation = "https://sphinx-singlehtml-anchors.readthedocs.io/"
 Issues = "https://github.com/jdillard/sphinx-singlehtml-anchors/issues"
 Source = "https://github.com/jdillard/sphinx-singlehtml-anchors"
 

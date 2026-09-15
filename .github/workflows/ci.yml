@@ -18,6 +18,8 @@ jobs:
           - "3.12"
         toxenv:
           - lint
+          - docs
+          - docs-without
           - sphinx81
           - sphinx82
           - sphinx91

@@ -14,6 +14,14 @@ both ``SingleFileHTMLBuilder.fix_refuris()`` lifecycle behaviors:
 * Sphinx versions containing the restoration proposed by
   `sphinx-doc/sphinx#14241 <https://github.com/sphinx-doc/sphinx/pull/14241>`_
 
+Documentation
+-------------
+
+The `live singlehtml demonstration
+<https://sphinx-singlehtml-anchors.readthedocs.io/>`_ contains repeated
+section and footnote targets and compares builds with and without the
+extension.
+
 Installation
 ------------
 
