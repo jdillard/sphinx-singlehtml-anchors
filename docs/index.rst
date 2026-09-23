@@ -54,11 +54,22 @@ browser address bar:
 The automatic footnote links in both guides exercise the same behavior with
 generated IDs.
 
+Try underscore-rich targets
+---------------------------
+
+Python names make delimiter edge cases concrete. Follow
+:py:func:`function_name`, :py:meth:`Widget.__init__`, and
+:py:class:`Payload__Envelope` into a source document whose own name contains
+double underscores. The :doc:`underscore and dunder reference examples
+<underscore__references>` explain why preserving underscores on both sides of
+the ``--`` target separator matters.
+
 .. toctree::
    :maxdepth: 2
    :numbered:
 
    first-guide
    second-guide
+   underscore__references
    usage
    how-it-works

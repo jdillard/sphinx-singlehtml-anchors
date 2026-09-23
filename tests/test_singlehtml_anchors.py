@@ -15,6 +15,7 @@ class OutputParser(HTMLParser):
         super().__init__()
         self.ids: list[str] = []
         self.hrefs: list[str] = []
+        self.links: list[dict[str, str | None]] = []
         self.classes: list[str] = []
 
     def handle_starttag(
@@ -27,6 +28,8 @@ class OutputParser(HTMLParser):
             self.ids.append(target_id)
         if href := attributes.get("href"):
             self.hrefs.append(href)
+            if _tag == "a":
+                self.links.append(attributes)
         if classes := attributes.get("class"):
             self.classes.extend(classes.split())
 
@@ -74,11 +77,15 @@ def test_singlehtml_ids_are_document_qualified_and_unique(tmp_path: Path) -> Non
         "document-index",
         "document-doc1",
         "document-doc2",
+        "document-api__reference",
         "document-index--anchor-test",
         "document-doc1--first-document",
         "document-doc1--purpose",
         "document-doc2--second-document",
         "document-doc2--purpose",
+        "document-api__reference--function_name",
+        "document-api__reference--Widget.__init__",
+        "document-api__reference--Payload__Envelope",
         "document-doc1--id1",
         "document-doc1--id2",
         "document-doc2--id1",
@@ -104,6 +111,22 @@ def test_every_internal_link_resolves_to_one_target(tmp_path: Path) -> None:
     assert "#document-doc2--id2" in internal_hrefs
 
 
+def test_python_domain_references_use_document_qualified_targets(tmp_path: Path) -> None:
+    outdir, _status = build(tmp_path, "singlehtml")
+    parser, _html = parse_html(outdir / "index.html")
+
+    xrefs = {
+        (link.get("title"), link["href"])
+        for link in parser.links
+        if link.get("title") in {"function_name", "Widget.__init__", "Payload__Envelope"}
+    }
+    assert {
+        ("function_name", "#document-api__reference--function_name"),
+        ("Widget.__init__", "#document-api__reference--Widget.__init__"),
+        ("Payload__Envelope", "#document-api__reference--Payload__Envelope"),
+    } <= xrefs
+
+
 def test_section_and_figure_numbers_are_preserved(tmp_path: Path) -> None:
     outdir, _status = build(tmp_path, "singlehtml")
     parser, _html = parse_html(outdir / "index.html")
@@ -119,6 +142,9 @@ def test_inventory_uses_qualified_targets(tmp_path: Path) -> None:
     assert "doc1-label std:label" in inventory
     assert "#document-doc1--doc1-label" in inventory
     assert "#document-doc1#doc1-label" not in inventory
+    assert "function_name py:function 1 #document-api__reference--function_name -" in inventory
+    assert "Widget.__init__ py:method 1 #document-api__reference--Widget.__init__ -" in inventory
+    assert "Payload__Envelope py:class 1 #document-api__reference--Payload__Envelope -" in inventory
 
 
 def test_regular_html_builder_is_unchanged(tmp_path: Path) -> None:
@@ -127,3 +153,14 @@ def test_regular_html_builder_is_unchanged(tmp_path: Path) -> None:
 
     assert "purpose" in parser.ids
     assert "document-doc1--purpose" not in parser.ids
+
+    api_parser, _html = parse_html(outdir / "api__reference.html")
+    assert {"function_name", "Widget.__init__", "Payload__Envelope"} <= set(api_parser.ids)
+    assert not any(
+        target_id.startswith("document-api__reference--") for target_id in api_parser.ids
+    )
+
+    index_parser, _html = parse_html(outdir / "index.html")
+    assert "api__reference.html#function_name" in index_parser.hrefs
+    assert "api__reference.html#Widget.__init__" in index_parser.hrefs
+    assert "api__reference.html#Payload__Envelope" in index_parser.hrefs
