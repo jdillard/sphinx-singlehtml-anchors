@@ -78,6 +78,7 @@ def test_singlehtml_ids_are_document_qualified_and_unique(tmp_path: Path) -> Non
         "document-doc1",
         "document-doc2",
         "document-api__reference",
+        "document-delimiter--reference",
         "document-index--anchor-test",
         "document-doc1--first-document",
         "document-doc1--purpose",
@@ -86,6 +87,7 @@ def test_singlehtml_ids_are_document_qualified_and_unique(tmp_path: Path) -> Non
         "document-api__reference--function_name",
         "document-api__reference--Widget.__init__",
         "document-api__reference--Payload__Envelope",
+        "document-delimiter--reference--target-name",
         "document-doc1--id1",
         "document-doc1--id2",
         "document-doc2--id1",
@@ -109,6 +111,7 @@ def test_every_internal_link_resolves_to_one_target(tmp_path: Path) -> None:
     assert "#document-doc2--purpose" in internal_hrefs
     assert "#document-doc1--id2" in internal_hrefs
     assert "#document-doc2--id2" in internal_hrefs
+    assert "#document-delimiter--reference--target-name" in internal_hrefs
 
 
 def test_python_domain_references_use_document_qualified_targets(tmp_path: Path) -> None:
@@ -145,6 +148,10 @@ def test_inventory_uses_qualified_targets(tmp_path: Path) -> None:
     assert "function_name py:function 1 #document-api__reference--function_name -" in inventory
     assert "Widget.__init__ py:method 1 #document-api__reference--Widget.__init__ -" in inventory
     assert "Payload__Envelope py:class 1 #document-api__reference--Payload__Envelope -" in inventory
+    assert (
+        "target--name std:label -1 "
+        "#document-delimiter--reference--target-name Double-hyphen target" in inventory
+    )
 
 
 def test_regular_html_builder_is_unchanged(tmp_path: Path) -> None:
@@ -164,3 +171,4 @@ def test_regular_html_builder_is_unchanged(tmp_path: Path) -> None:
     assert "api__reference.html#function_name" in index_parser.hrefs
     assert "api__reference.html#Widget.__init__" in index_parser.hrefs
     assert "api__reference.html#Payload__Envelope" in index_parser.hrefs
+    assert "delimiter--reference.html#target-name" in index_parser.hrefs

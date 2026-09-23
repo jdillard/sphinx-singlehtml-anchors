@@ -64,6 +64,10 @@ double underscores. The :doc:`underscore and dunder reference examples
 <underscore__references>` explain why preserving underscores on both sides of
 the ``--`` target separator matters.
 
+The :ref:`double-hyphen target <separator--target>` goes one step further:
+its :doc:`source document <delimiter--examples>` and explicit label spelling
+both contain the complete separator sequence.
+
 .. toctree::
    :maxdepth: 2
    :numbered:
@@ -71,5 +75,6 @@ the ``--`` target separator matters.
    first-guide
    second-guide
    underscore__references
+   delimiter--examples
    usage
    how-it-works
