@@ -20,3 +20,6 @@ Target containing double hyphens
 
 Follow :ref:`this link back to the double-hyphen target
 <separator--target>`.
+
+See :ref:`separator-choice` for why ``--`` is the current experimental
+choice and how ``#``, ``:``, ``.``, and structural encodings compare.

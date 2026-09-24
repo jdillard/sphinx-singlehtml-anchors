@@ -33,6 +33,10 @@ Targets within a document combine that document target with the original ID:
 
    #document-guide/chapter--purpose
 
+The ``--`` separator is an experimental tradeoff, not a reserved character.
+See :ref:`separator-choice` for the decision criteria, alternatives such as
+``#``, ``:``, and ``.``, and the gotchas associated with each.
+
 Because this changes existing ``singlehtml`` deep links, the extension is
 experimental while the target scheme and compatibility behavior receive
 community testing.
