@@ -92,18 +92,6 @@ and section IDs to one hyphen, as shown in :ref:`the standard-label example
 can still require CSS escaping; ``--`` merely avoids adding that requirement
 to every qualified ID.
 
-The builder does not recover the two components by splitting the combined
-ID. It constructs the ID while both components are known, retains that
-mapping when references and inventory entries are rewritten, and rejects a
-build if two distinct source targets would produce the same combined ID.
-This matters because docnames, custom domains, and extensions are not
-guaranteed to exclude ``--``. The :doc:`delimiter example
-<delimiter--examples>` deliberately includes it in a docname.
-For example, ``document-a--b--c`` could not by itself distinguish the pair
-``(a--b, c)`` from ``(a, b--c)``. The retained mapping makes that ambiguity
-irrelevant unless both pairs actually occur, in which case the collision is
-reported instead of producing duplicate HTML IDs.
-
 The main alternatives have tradeoffs:
 
 Literal ``#`` inside the ID
@@ -119,6 +107,37 @@ Colon (``:``) or period (``.``)
 Underscore
    Python identifiers make ``_`` and ``__`` especially common. See
    :ref:`qualified-id-name-examples` for examples.
+
+.. _collision-handling:
+
+Collision handling
+------------------
+
+Collisions should be rare, but docnames, custom domains, and extensions are
+not guaranteed to exclude ``--``. For example, ``document-a--b--c`` could
+represent either ``(a--b, c)`` or ``(a, b--c)``. The retained source-to-target
+mapping avoids having to choose an interpretation.
+
+If both pairs actually occur, the extension emits a ``[singlehtml.target_collision]`` warning and assigns each
+affected source target a deterministic fallback ID. The fallback appends
+``--`` and the first 16 hexadecimal characters of a SHA-256 digest of the
+docname, a null separator, and the original target ID. For the example above,
+the two fallback IDs are:
+
+.. code-block:: text
+
+   document-a--b--c--284eb05e86de2556
+   document-a--b--c--f125c2f6343f3b8e
+
+If a generated fallback is already in use, a numeric suffix such as ``-2`` is
+added. The rewritten links and inventory entries use the selected fallback,
+so the output remains unique and the build normally completes.
+
+Repeating the same original ID within one source document is a different
+ambiguity: references contain no information that can distinguish the
+occurrences. The extension emits ``[singlehtml.duplicate_target]``, keeps the
+first occurrence's qualified ID, removes that ID from later nodes, and
+resolves references to the first occurrence.
 
 Compatibility
 -------------

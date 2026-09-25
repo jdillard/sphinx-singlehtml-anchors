@@ -8,6 +8,7 @@ from pathlib import Path
 from sphinx.application import Sphinx
 
 ROOT = Path(__file__).parent / "roots" / "anchors"
+COLLISION_ROOT = Path(__file__).parent / "roots" / "collision"
 
 
 class OutputParser(HTMLParser):
@@ -34,13 +35,19 @@ class OutputParser(HTMLParser):
             self.classes.extend(classes.split())
 
 
-def build(tmp_path: Path, builder: str) -> tuple[Path, str]:
+def build(
+    tmp_path: Path,
+    builder: str,
+    *,
+    root: Path = ROOT,
+    expected_warnings: tuple[str, ...] = (),
+) -> tuple[Path, str]:
     outdir = tmp_path / builder
     status = io.StringIO()
     warning = io.StringIO()
     app = Sphinx(
-        srcdir=str(ROOT),
-        confdir=str(ROOT),
+        srcdir=str(root),
+        confdir=str(root),
         outdir=str(outdir),
         doctreedir=str(tmp_path / f"{builder}-doctrees"),
         buildername=builder,
@@ -50,8 +57,13 @@ def build(tmp_path: Path, builder: str) -> tuple[Path, str]:
     )
     app.build(force_all=True)
     assert app.statuscode == 0
-    assert "sphinx-singlehtml-anchors" not in warning.getvalue()
-    assert "undefined label" not in warning.getvalue()
+    warning_text = warning.getvalue()
+    if not expected_warnings:
+        assert "sphinx-singlehtml-anchors" not in warning_text
+    else:
+        for expected_warning in expected_warnings:
+            assert expected_warning in warning_text
+    assert "undefined label" not in warning_text
     return outdir, status.getvalue()
 
 
@@ -112,6 +124,46 @@ def test_every_internal_link_resolves_to_one_target(tmp_path: Path) -> None:
     assert "#document-doc1--id2" in internal_hrefs
     assert "#document-doc2--id2" in internal_hrefs
     assert "#document-delimiter--reference--target-name" in internal_hrefs
+
+
+def test_collisions_warn_and_receive_stable_unique_fallback_ids(tmp_path: Path) -> None:
+    warnings = (
+        "[singlehtml.target_collision]",
+        "[singlehtml.duplicate_target]",
+    )
+    outdir, _status = build(
+        tmp_path / "first",
+        "singlehtml",
+        root=COLLISION_ROOT,
+        expected_warnings=warnings,
+    )
+    parser, _html = parse_html(outdir / "index.html")
+
+    assert len(parser.ids) == len(set(parser.ids))
+    id_counts = {target_id: parser.ids.count(target_id) for target_id in parser.ids}
+    internal_hrefs = [href for href in parser.hrefs if href.startswith("#") and href != "#"]
+    for href in internal_hrefs:
+        assert id_counts.get(href[1:], 0) == 1, href
+
+    assert "document-collision--reference" in parser.ids
+    fallback_id = "document-collision--reference--fa1411357bc096dc"
+    assert fallback_id in parser.ids
+    assert f"#{fallback_id}" in parser.hrefs
+    assert "#document-collision--reference" in parser.hrefs
+    assert parser.ids.count("document-collision--duplicate") == 1
+    assert "#document-collision--duplicate" in parser.hrefs
+
+    second_outdir, _status = build(
+        tmp_path / "second",
+        "singlehtml",
+        root=COLLISION_ROOT,
+        expected_warnings=warnings,
+    )
+    second_parser, _html = parse_html(second_outdir / "index.html")
+    assert fallback_id in second_parser.ids
+
+    inventory = inventory_body(outdir / "objects.inv")
+    assert f"reference std:label -1 #{fallback_id} Reference" in inventory
 
 
 def test_python_domain_references_use_document_qualified_targets(tmp_path: Path) -> None:

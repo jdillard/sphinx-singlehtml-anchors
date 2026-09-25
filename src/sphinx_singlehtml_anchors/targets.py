@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Iterator, Mapping
 
 from docutils import nodes
 from sphinx import addnodes
-from sphinx.errors import ExtensionError
+from sphinx.util import logging
 
 TargetKey = tuple[str, str]
 TargetMap = dict[TargetKey, str]
+
+logger = logging.getLogger(__name__)
 
 
 def document_target_id(docname: str) -> str:
@@ -20,6 +23,23 @@ def document_target_id(docname: str) -> str:
 def qualified_target_id(docname: str, target_id: str) -> str:
     """Return a document-qualified target ID."""
     return f"{document_target_id(docname)}--{target_id}"
+
+
+def _collision_fallback_id(
+    target_id: str,
+    key: TargetKey,
+    unavailable_ids: set[str],
+) -> str:
+    """Return a stable unused ID for a colliding document/target pair."""
+    digest = hashlib.sha256(f"{key[0]}\0{key[1]}".encode()).hexdigest()[:16]
+    stem = f"{target_id}--{digest}"
+    candidate = stem
+    suffix = 2
+    while candidate in unavailable_ids:
+        candidate = f"{stem}-{suffix}"
+        suffix += 1
+    unavailable_ids.add(candidate)
+    return candidate
 
 
 def _iter_scoped_nodes(
@@ -41,30 +61,61 @@ def qualify_doctree_targets(
 ) -> TargetMap:
     """Qualify every target and its references in a merged singlehtml doctree."""
     mapping: TargetMap = {}
-    owners: dict[str, TargetKey | tuple[str, None]] = {
+    document_owners: dict[str, tuple[str, None]] = {
         document_target_id(docname): (docname, None) for docname in all_docnames
     }
     scoped_nodes = list(_iter_scoped_nodes(tree, root_docname))
+    keys_by_target_id: dict[str, list[TargetKey]] = {}
+    seen_keys: set[TargetKey] = set()
 
     for docname, node in scoped_nodes:
         if not isinstance(node, nodes.Element):
             continue
         old_ids: list[str] = node.get("ids", [])
+        retained_ids: list[str] = []
         for old_id in old_ids:
             key = (docname, old_id)
             new_id = qualified_target_id(docname, old_id)
-            if key in mapping:
-                raise ExtensionError(
-                    f"singlehtml target {old_id!r} occurs more than once in {docname!r}"
+            if key in seen_keys:
+                logger.warning(
+                    "singlehtml target %r occurs more than once in %r; "
+                    "keeping the first occurrence and removing this duplicate ID",
+                    old_id,
+                    docname,
+                    type="singlehtml",
+                    subtype="duplicate_target",
                 )
-            if new_id in owners:
-                other = owners[new_id]
-                raise ExtensionError(
-                    "document-qualified singlehtml target collision between "
-                    f"{key!r} and {other!r}: {new_id!r}"
-                )
-            mapping[key] = new_id
-            owners[new_id] = key
+                continue
+            seen_keys.add(key)
+            retained_ids.append(old_id)
+            keys_by_target_id.setdefault(new_id, []).append(key)
+        if retained_ids != old_ids:
+            node["ids"] = retained_ids
+
+    unavailable_ids = set(document_owners) | set(keys_by_target_id)
+    for new_id, keys in keys_by_target_id.items():
+        document_owner = document_owners.get(new_id)
+        if len(keys) == 1 and document_owner is None:
+            mapping[keys[0]] = new_id
+            continue
+
+        owners: list[TargetKey | tuple[str, None]] = list(keys)
+        if document_owner is not None:
+            owners.append(document_owner)
+        owner_summary = ", ".join(repr(owner) for owner in sorted(owners, key=repr))
+        for key in sorted(keys):
+            fallback_id = _collision_fallback_id(new_id, key, unavailable_ids)
+            mapping[key] = fallback_id
+            logger.warning(
+                "document-qualified singlehtml target %r is produced by %s; "
+                "using fallback ID %r for %r",
+                new_id,
+                owner_summary,
+                fallback_id,
+                key,
+                type="singlehtml",
+                subtype="target_collision",
+            )
 
     for docname, node in scoped_nodes:
         if not isinstance(node, nodes.Element):
