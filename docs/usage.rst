@@ -21,13 +21,16 @@ including regular multi-page HTML, retain their normal target format.
 Target format
 -------------
 
-Document-level targets retain Sphinx's existing form:
+The example document at ``guide/chapter.rst`` has the Sphinx docname
+``guide/chapter``. Document-level targets retain Sphinx's existing form,
+including the forward slash from that source path:
 
 .. code-block:: text
 
    #document-guide/chapter
 
-Targets within a document combine that document target with the original ID:
+Targets within a document combine that document target with the original ID.
+For example, :ref:`the Purpose section <guide/chapter:purpose>` has:
 
 .. code-block:: text
 

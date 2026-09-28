@@ -51,6 +51,12 @@ Document name with ``--``
    :doc:`The delimiter example <delimiter--examples>` also keeps its source
    docname: ``#document-delimiter--examples``.
 
+Document in a subfolder
+   The source path ``guide/chapter.rst`` has the docname ``guide/chapter``.
+   :ref:`Its Purpose section <guide/chapter:purpose>` therefore keeps the
+   forward slash in
+   ``#document-guide/chapter--purpose``.
+
 .. _standard-label-normalization-example:
 
 Standard label

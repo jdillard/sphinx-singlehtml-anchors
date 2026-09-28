@@ -89,6 +89,7 @@ def test_singlehtml_ids_are_document_qualified_and_unique(tmp_path: Path) -> Non
         "document-index",
         "document-doc1",
         "document-doc2",
+        "document-guide/chapter",
         "document-api__reference",
         "document-delimiter--reference",
         "document-index--anchor-test",
@@ -96,6 +97,8 @@ def test_singlehtml_ids_are_document_qualified_and_unique(tmp_path: Path) -> Non
         "document-doc1--purpose",
         "document-doc2--second-document",
         "document-doc2--purpose",
+        "document-guide/chapter--nested-chapter",
+        "document-guide/chapter--purpose",
         "document-api__reference--function_name",
         "document-api__reference--Widget.__init__",
         "document-api__reference--Payload__Envelope",
@@ -121,6 +124,8 @@ def test_every_internal_link_resolves_to_one_target(tmp_path: Path) -> None:
     assert "#document-index" in internal_hrefs
     assert "#document-doc1--purpose" in internal_hrefs
     assert "#document-doc2--purpose" in internal_hrefs
+    assert "#document-guide/chapter" in internal_hrefs
+    assert "#document-guide/chapter--purpose" in internal_hrefs
     assert "#document-doc1--id2" in internal_hrefs
     assert "#document-doc2--id2" in internal_hrefs
     assert "#document-delimiter--reference--target-name" in internal_hrefs
@@ -197,6 +202,10 @@ def test_inventory_uses_qualified_targets(tmp_path: Path) -> None:
     assert "doc1-label std:label" in inventory
     assert "#document-doc1--doc1-label" in inventory
     assert "#document-doc1#doc1-label" not in inventory
+    assert (
+        "guide/chapter:purpose std:label -1 "
+        "#document-guide/chapter--purpose Purpose" in inventory
+    )
     assert "function_name py:function 1 #document-api__reference--function_name -" in inventory
     assert "Widget.__init__ py:method 1 #document-api__reference--Widget.__init__ -" in inventory
     assert "Payload__Envelope py:class 1 #document-api__reference--Payload__Envelope -" in inventory
@@ -224,3 +233,7 @@ def test_regular_html_builder_is_unchanged(tmp_path: Path) -> None:
     assert "api__reference.html#Widget.__init__" in index_parser.hrefs
     assert "api__reference.html#Payload__Envelope" in index_parser.hrefs
     assert "delimiter--reference.html#target-name" in index_parser.hrefs
+
+    nested_parser, _html = parse_html(outdir / "guide" / "chapter.html")
+    assert "purpose" in nested_parser.ids
+    assert "document-guide/chapter--purpose" not in nested_parser.ids

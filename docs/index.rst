@@ -26,6 +26,46 @@ footnotes, reproducing the collisions described in
       section and footnote IDs demonstrate the original problem. Compare it
       with the `fixed build <../index.html>`__.
 
+Using the extension
+-------------------
+
+Install the package and enable it in ``conf.py``:
+
+.. code-block:: python
+
+   extensions = [
+       "sphinx_singlehtml_anchors",
+   ]
+
+Then build the documentation with Sphinx's ``singlehtml`` builder. Other
+builders, including regular multi-page HTML, retain their normal target format.
+
+Target format
+-------------
+
+The example document at ``guide/chapter.rst`` has the Sphinx docname
+``guide/chapter``. Document-level targets retain Sphinx's existing form,
+including the forward slash from that source path:
+
+.. code-block:: text
+
+   #document-guide/chapter
+
+Targets within a document combine that document target with the original ID.
+For example, :ref:`the Purpose section <guide/chapter:purpose>` has:
+
+.. code-block:: text
+
+   #document-guide/chapter--purpose
+
+The ``--`` separator is an experimental tradeoff, not a reserved character.
+See :ref:`separator-choice` for the decision criteria, alternatives such as
+``#``, ``:``, and ``.``, and the gotchas associated with each.
+
+Because this changes existing ``singlehtml`` deep links, the extension is
+experimental while the target scheme and compatibility behavior receive
+community testing.
+
 Try the repeated targets
 ------------------------
 
@@ -54,19 +94,10 @@ browser address bar:
 The automatic footnote links in both guides exercise the same behavior with
 generated IDs.
 
-Try underscore-rich targets
----------------------------
+.. note::
 
-Python names make delimiter edge cases concrete. Follow
-:py:func:`function_name`, :py:meth:`Widget.__init__`, and
-:py:class:`Payload__Envelope` into a source document whose own name contains
-double underscores. The :doc:`underscore and dunder reference examples
-<underscore__references>` explain why preserving underscores on both sides of
-the ``--`` target separator matters.
-
-The :ref:`double-hyphen target <separator--target>` goes one step further:
-its :doc:`source document <delimiter--examples>` and explicit label spelling
-both contain the complete separator sequence.
+   See :ref:`How it works <separator-choice>` for why ``--`` was chosen as
+   the separator between the source document and the target ID.
 
 .. toctree::
    :maxdepth: 2
@@ -74,6 +105,7 @@ both contain the complete separator sequence.
 
    first-guide
    second-guide
+   guide/chapter
    underscore__references
    delimiter--examples
    usage

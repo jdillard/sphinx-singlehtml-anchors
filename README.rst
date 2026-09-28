@@ -42,13 +42,16 @@ Then build normally:
 Target format
 -------------
 
-Document targets retain Sphinx's existing form:
+For a source document at ``guide/chapter.rst``, Sphinx uses the docname
+``guide/chapter``. Document targets retain Sphinx's existing form, including
+the forward slash from that source path:
 
 .. code-block:: text
 
    #document-guide/chapter
 
-Targets within a document include both the source document and original ID:
+Targets within a document include both the source document and original ID.
+For example, a ``Purpose`` section in that document has:
 
 .. code-block:: text
 
