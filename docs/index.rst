@@ -240,18 +240,6 @@ occurrences. The extension emits ``[singlehtml.duplicate_target]``, keeps the
 first occurrence's qualified ID, removes that ID from later nodes, and
 resolves references to the first occurrence.
 
-Compatibility
-^^^^^^^^^^^^^
-
-The extension supports released Sphinx versions from 8.1 through 9.x across
-both ``SingleFileHTMLBuilder.fix_refuris()`` lifecycle behaviors:
-
-* Sphinx 8.1.x, where Sphinx calls ``fix_refuris()``
-* Sphinx 8.2.x through 9.x, where the extension supplies the omitted calls
-* Sphinx versions containing the restoration proposed by
-  `sphinx-doc/sphinx#14241
-  <https://github.com/sphinx-doc/sphinx/pull/14241>`_
-
 .. toctree::
    :maxdepth: 2
    :numbered:
