@@ -40,34 +40,20 @@ Install the package and enable it in ``conf.py``:
 Then build the documentation with Sphinx's ``singlehtml`` builder. Other
 builders, including regular multi-page HTML, retain their normal target format.
 
-Target format
--------------
+Target format and live examples
+-------------------------------
 
-The example document at ``guide/chapter.rst`` has the Sphinx docname
-``guide/chapter``. Document-level targets retain Sphinx's existing form,
-including the forward slash from that source path:
+Document-level targets retain Sphinx's existing form:
 
 .. code-block:: text
 
-   #document-guide/chapter
+   #document-{docname}
 
-Targets within a document combine that document target with the original ID.
-For example, :ref:`the Purpose section <guide/chapter:purpose>` has:
+Targets within a document append the original target ID:
 
 .. code-block:: text
 
-   #document-guide/chapter--purpose
-
-The ``--`` separator is an experimental tradeoff, not a reserved character.
-See :ref:`separator-choice` for the decision criteria, alternatives such as
-``#``, ``:``, and ``.``, and the gotchas associated with each.
-
-Because this changes existing ``singlehtml`` deep links, the extension is
-experimental while the target scheme and compatibility behavior receive
-community testing.
-
-Try the repeated targets
-------------------------
+   #document-{docname}--{target-id}
 
 Follow each link and watch both the destination and the fragment in the
 browser address bar:
@@ -94,10 +80,17 @@ browser address bar:
 The automatic footnote links in both guides exercise the same behavior with
 generated IDs.
 
-.. note::
+Source paths are preserved in Sphinx docnames. The example document at
+``guide/chapter.rst`` therefore has the docname ``guide/chapter``. Follow
+:ref:`its Purpose section <guide/chapter:purpose>` to see the forward slash in
+``#document-guide/chapter--purpose``.
 
-   See :ref:`How it works <separator-choice>` for why ``--`` was chosen as
-   the separator between the source document and the target ID.
+The ``--`` separator is an experimental tradeoff, not a reserved character.
+See :ref:`separator-choice` for the decision criteria, alternatives such as
+``#``, ``:``, and ``.``, and the gotchas associated with each. Because this
+format changes existing ``singlehtml`` deep links, the extension remains
+experimental while its target scheme and compatibility behavior receive
+community testing.
 
 .. toctree::
    :maxdepth: 2
