@@ -101,5 +101,4 @@ community testing.
    guide/chapter
    underscore__references
    delimiter--examples
-   usage
    how-it-works
