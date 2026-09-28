@@ -57,14 +57,18 @@ The extension leaves that document-level anchor unchanged:
    #document-{docname}
 
 For targets within the document, the extension appends the original target ID
-using ``--``:
+using ``--``. This makes otherwise identical target IDs unique after Sphinx
+merges the source documents into one page:
 
 .. code-block:: text
 
    #document-{docname}--{target-id}
 
-Follow each link and watch both the destination and the fragment in the
-browser address bar:
+.. note:: See :ref:`separator-choice` for the decision criteria, alternatives
+   such as ``#``, ``:``, and ``.``, and the gotchas associated with each.
+
+To see these qualified targets in action, follow each link and watch both the
+destination and the fragment in the browser address bar:
 
 * :ref:`Overview in the first guide <first-guide:overview>`
 * :ref:`Overview in the second guide <second-guide:overview>`
@@ -88,17 +92,10 @@ browser address bar:
 The automatic footnote links in both guides exercise the same behavior with
 generated IDs.
 
-Source paths are preserved in Sphinx docnames. The example document at
+Source paths are also preserved in Sphinx docnames. The example document at
 ``guide/chapter.rst`` therefore has the docname ``guide/chapter``. Follow
 :ref:`its Purpose section <guide/chapter:purpose>` to see the forward slash in
 ``#document-guide/chapter--purpose``.
-
-The ``--`` separator is an experimental tradeoff, not a reserved character.
-See :ref:`separator-choice` for the decision criteria, alternatives such as
-``#``, ``:``, and ``.``, and the gotchas associated with each. Because this
-format changes existing ``singlehtml`` deep links, the extension remains
-experimental while its target scheme and compatibility behavior receive
-community testing.
 
 Implementation details
 ~~~~~~~~~~~~~~~~~~~~~~
