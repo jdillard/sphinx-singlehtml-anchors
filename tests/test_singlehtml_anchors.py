@@ -203,8 +203,7 @@ def test_inventory_uses_qualified_targets(tmp_path: Path) -> None:
     assert "#document-doc1--doc1-label" in inventory
     assert "#document-doc1#doc1-label" not in inventory
     assert (
-        "guide/chapter:purpose std:label -1 "
-        "#document-guide/chapter--purpose Purpose" in inventory
+        "guide/chapter:purpose std:label -1 #document-guide/chapter--purpose Purpose" in inventory
     )
     assert "function_name py:function 1 #document-api__reference--function_name -" in inventory
     assert "Widget.__init__ py:method 1 #document-api__reference--Widget.__init__ -" in inventory

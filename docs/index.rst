@@ -40,16 +40,24 @@ Install the package and enable it in ``conf.py``:
 Then build the documentation with Sphinx's ``singlehtml`` builder. Other
 builders, including regular multi-page HTML, retain their normal target format.
 
-Target format and live examples
--------------------------------
+How it works
+------------
 
-Document-level targets retain Sphinx's existing form:
+That is all the configuration required. The rest of this page demonstrates the
+generated targets and explains implementation details.
+
+Target format and live examples
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In a ``singlehtml`` build, Sphinx creates an anchor for each source document.
+The extension leaves that document-level anchor unchanged:
 
 .. code-block:: text
 
    #document-{docname}
 
-Targets within a document append the original target ID:
+For targets within the document, the extension appends the original target ID
+using ``--``:
 
 .. code-block:: text
 
@@ -92,8 +100,8 @@ format changes existing ``singlehtml`` deep links, the extension remains
 experimental while its target scheme and compatibility behavior receive
 community testing.
 
-How it works
-------------
+Implementation details
+~~~~~~~~~~~~~~~~~~~~~~
 
 Sphinx parses every source file as a separate document. Generated target IDs
 are therefore unique within each source document, but the ``singlehtml``
