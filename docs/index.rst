@@ -208,8 +208,16 @@ Literal ``#`` inside the ID
    and the encoded character.
 
 Colon (``:``) or period (``.``)
-   In a CSS selector, a colon introduces a pseudo-class and a period introduces
-   a class, so either separator must be escaped.
+   In a CSS ID selector, a colon introduces a pseudo-class and a period
+   introduces a class, so either separator must be escaped.
+
+   This is a minor concern rather than a deciding factor: IDs for nested
+   documents already contain ``/``, which also needs CSS escaping, and JavaScript
+   can safely construct a selector with ``CSS.escape(id)``.
+
+   A period is common within Python target IDs; for example,
+   :py:meth:`Widget.__init__` preserves its periods, as shown in
+   :ref:`qualified-id-name-examples`, so ``:`` would be less common in targets.
 
 Underscore
    Python identifiers make ``_`` and ``__`` especially common. See
