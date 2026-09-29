@@ -137,7 +137,7 @@ def test_duplicate_targets_warn_and_keep_first(tmp_path: Path) -> None:
         tmp_path,
         "singlehtml",
         root=COLLISION_ROOT,
-        expected_warnings=("occurs more than once",),
+        expected_warnings=("[singlehtml.duplicate_target]",),
     )
     parser, _html = parse_html(outdir / "index.html")
 

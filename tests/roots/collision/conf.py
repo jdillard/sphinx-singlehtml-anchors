@@ -6,6 +6,7 @@ from docutils.parsers.rst import Directive
 project = "singlehtml-anchor-collision"
 extensions = ["sphinx_singlehtml_anchors"]
 html_theme = "basic"
+show_warning_types = True
 
 
 class DuplicateTargets(Directive):
