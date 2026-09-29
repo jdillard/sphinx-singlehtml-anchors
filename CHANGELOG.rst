@@ -4,7 +4,7 @@ Changelog
 0.2.0
 -----
 
-* Change the delimiter from ``#`` to ``:``.
+* Change the delimiter from ``--`` to ``:``.
 
 0.1.1
 -----
