@@ -22,7 +22,7 @@ def document_target_id(docname: str) -> str:
 
 def qualified_target_id(docname: str, target_id: str) -> str:
     """Return a document-qualified target ID."""
-    return f"{document_target_id(docname)}--{target_id}"
+    return f"{document_target_id(docname)}:{target_id}"
 
 
 def _collision_fallback_id(
@@ -32,7 +32,7 @@ def _collision_fallback_id(
 ) -> str:
     """Return a stable unused ID for a colliding document/target pair."""
     digest = hashlib.sha256(f"{key[0]}\0{key[1]}".encode()).hexdigest()[:16]
-    stem = f"{target_id}--{digest}"
+    stem = f"{target_id}:{digest}"
     candidate = stem
     suffix = 2
     while candidate in unavailable_ids:

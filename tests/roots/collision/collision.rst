@@ -6,6 +6,6 @@ Collision source
 Reference
 ---------
 
-This target's normally qualified ID matches another document-level target.
+The custom directive below emits the same target ID twice.
 
 .. duplicate-targets::
