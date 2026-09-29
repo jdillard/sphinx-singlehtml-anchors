@@ -1,10 +1,8 @@
 Collision test
 ==============
 
-See the :ref:`colliding section <reference>` and the
-:doc:`colliding document <collision--reference>`.
+See the :ref:`referenced section <reference>`.
 
 .. toctree::
 
    collision
-   collision--reference

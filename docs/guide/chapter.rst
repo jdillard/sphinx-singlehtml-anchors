@@ -9,6 +9,6 @@ Purpose
 -------
 
 In the ``singlehtml`` build, this section has the qualified target
-``#document-guide/chapter--purpose``.
+``#document-guide/chapter:purpose``.
 
 Return to the :doc:`demonstration <../index>`.
